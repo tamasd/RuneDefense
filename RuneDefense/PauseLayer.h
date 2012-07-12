@@ -10,7 +10,7 @@
 #import "cocos2d.h"
 #import "GameHUD.h"
 #import "EndGame.h"
-#import "MapScreenLayer.h"
+#import "TutorialScene.h"
 #import "MenuLayer.h"
 
 @interface PauseLayer : CCLayerColor{

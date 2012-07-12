@@ -1,27 +1,38 @@
 //
 //  DataModel.h
-//  RuneDefense
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "cocos2d.h"
 
-@interface DataModel : NSObject {
-    
+@interface DataModel : NSObject <NSCoding> {
+	CCLayer *_gameLayer;
+	CCLayer *_gameHUDLayer;	
+	
+	NSMutableArray *_projectiles;
+	NSMutableArray *_towers;
+	NSMutableArray *_targets;	
+	NSMutableArray *_waypoints;	
+	
+	NSMutableArray *_waves;	
+	
+	UIPanGestureRecognizer *_gestureRecognizer;
 }
 
-@property (nonatomic, retain) CCLayer *gameLayer;
-@property (nonatomic, retain) CCLayer *gameHUDLayer;
-@property (nonatomic, retain) NSMutableArray *projectiles;
-@property (nonatomic, retain) NSMutableArray *towers;
-@property (nonatomic, retain) NSMutableArray *targets;
-@property (nonatomic, retain) NSMutableArray *waypoints;
-@property (nonatomic, retain) NSMutableArray *waves;
-@property (nonatomic, retain) UIPanGestureRecognizer *gestureRecognizer;
+@property (nonatomic, retain) CCLayer *_gameLayer;
+@property (nonatomic, retain) CCLayer *_gameHUDLayer;
 
-+ (DataModel *)getModel;
+@property (nonatomic, retain) NSMutableArray * _projectiles;
+@property (nonatomic, retain) NSMutableArray * _towers;
+@property (nonatomic, retain) NSMutableArray * _targets;
+@property (nonatomic, retain) NSMutableArray * _waypoints;
+
+@property (nonatomic, retain) NSMutableArray * _waves;
+
+@property (nonatomic, retain) UIPanGestureRecognizer *_gestureRecognizer;;
++ (DataModel*)getModel;
 
 @end

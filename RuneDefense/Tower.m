@@ -1,33 +1,29 @@
 //
-//  Tower.m
-//  RuneDefense
+//  Creep.m
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
 #import "Tower.h"
-#import "DataModel.h"
-#import "Creep.h"
-#import "baseAttributes.h"
-#import "Projectile.h"
 
 @implementation Tower
 
-@synthesize experience;
-@synthesize lvl;
+@synthesize experience = experience;
+@synthesize lvl = lvl;
 
-@synthesize lvlup1;
-@synthesize lvlup2;
-@synthesize lvlupCost;
-@synthesize lvlupReady;
+@synthesize lvlup1 = lvlup1;
+@synthesize lvlup2 = lvlup2;
+@synthesize lvlupCost = lvlupCost;
+@synthesize lvlupReady = lvlupReady;
 
-@synthesize range;
-@synthesize damageMin;
-@synthesize damageRandom;
-@synthesize fireRate;
-@synthesize freezeDur;
-@synthesize splashDist;
+@synthesize range = range;
+@synthesize damageMin = damageMin;
+@synthesize damageRandom = damageRandom;
+@synthesize fireRate = fireRate;
+@synthesize freezeDur = freezeDur;
+@synthesize splashDist = splashDist;
 
 
 @synthesize target = _target;
@@ -40,7 +36,7 @@
 	
 	DataModel *m = [DataModel getModel];
 	
-	for (CCSprite *target in m.targets) {	
+	for (CCSprite *target in m._targets) {	
 		Creep *creep = (Creep *)target;
 		double curDistance = ccpDistance(self.position, creep.position);
 		
@@ -77,7 +73,7 @@
         tower.lvl = 1;
         tower.lvlup1 = baseAttributes.baseMGlvlup1;
         tower.lvlup2 = baseAttributes.baseMGlvlup2;
-        tower.lvlupCost = baseAttributes.baseMGCost / 2;
+        tower.lvlupCost = baseAttributes.baseMGCost /2;
         tower.lvlupReady = NO;
         tower.freezeDur = 0;
         tower.splashDist = 0;
@@ -87,6 +83,9 @@
 		
         [tower schedule:@selector(checkTarget) interval:0.5];
         [tower schedule:@selector(checkExperience) interval:0.5];
+        
+        
+        
     }
 	
     return tower;
@@ -167,7 +166,7 @@
 	CCSprite *sprite = (CCSprite *)sender;
 	[self.parent removeChild:sprite cleanup:YES];
 	
-	[m.projectiles removeObject:sprite];
+	[m._projectiles removeObject:sprite];
 	
 }
 
@@ -180,7 +179,7 @@
         self.nextProjectile.position = self.position;
         
         [self.parent addChild:self.nextProjectile z:1];
-        [m.projectiles addObject:self.nextProjectile];
+        [m._projectiles addObject:self.nextProjectile];
         
         ccTime delta = 0.5;
         CGPoint shootVector = ccpSub(self.target.position, self.position);
@@ -310,7 +309,7 @@
 	CCSprite *sprite = (CCSprite *)sender;
 	[self.parent removeChild:sprite cleanup:YES];
 	
-	[m.projectiles removeObject:sprite];
+	[m._projectiles removeObject:sprite];
 	
 }
 
@@ -323,7 +322,7 @@
         self.nextProjectile.position = self.position;
         
         [self.parent addChild:self.nextProjectile z:1];
-        [m.projectiles addObject:self.nextProjectile];
+        [m._projectiles addObject:self.nextProjectile];
         
         ccTime delta = 0.5;
         CGPoint shootVector = ccpSub(self.target.position, self.position);
@@ -453,7 +452,7 @@
 	CCSprite *sprite = (CCSprite *)sender;
 	[self.parent removeChild:sprite cleanup:YES];
 	
-	[m.projectiles removeObject:sprite];
+	[m._projectiles removeObject:sprite];
 	
 }
 
@@ -466,7 +465,7 @@
         self.nextProjectile.position = self.position;
         
         [self.parent addChild:self.nextProjectile z:1];
-        [m.projectiles addObject:self.nextProjectile];
+        [m._projectiles addObject:self.nextProjectile];
         
         ccTime delta = 0.5;
         CGPoint shootVector = ccpSub(self.target.position, self.position);

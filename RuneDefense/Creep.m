@@ -1,84 +1,59 @@
 //
 //  Creep.m
-//  RuneDefense
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
 #import "Creep.h"
-#import "Waypoint.h"
-#import "DataModel.h"
-#import "GameHUD.h"
-#import "baseAttributes.h"
 
 @implementation Creep
 
-@synthesize hp, moveDuration, currentWaypoint, totalHP, healthBar, lastWaypoint, dataFile;
+@synthesize hp = _curHp;
+@synthesize moveDuration = _moveDuration;
+@synthesize totalHp = _totalHp;
 
-- (id)copyWithZone:(NSZone *)zone
-{
-    Creep *copy = [[[self class] allocWithZone:zone] initWithCreep:self];
-    return copy;
+@synthesize curWaypoint = _curWaypoint;
+@synthesize lastWaypoint = _lastWaypoint;
+@synthesize healthBar = healthBar;
+
+
+
+- (id) copyWithZone:(NSZone *)zone {
+	Creep *copy = [[[self class] allocWithZone:zone] initWithCreep:self];
+	return copy;
 }
 
-- (Creep *)initWithCreep:(Creep *)copyFrom
-{
-    if ((self = [[[Creep alloc] initFromDataFile:copyFrom.dataFile] autorelease])) {
-        self.currentWaypoint = copyFrom.currentWaypoint;
+- (Creep *) initWithCreep:(Creep *) copyFrom {
+    if ((self = [[[super alloc] initWithFile:@"Enemy1.png"] autorelease])) {
         self.hp = copyFrom.hp;
-    }
-    [self retain];
-    return self;
+        self.moveDuration = copyFrom.moveDuration;
+        self.curWaypoint = copyFrom.curWaypoint;
+        
+        
+	}
+	[self retain];
+	return self;
 }
 
-- (Creep *)initFromDataFile:(NSString *)plistName
-{
-    Creep *creep = nil;
-    
-    self.dataFile = plistName;
-    
-    NSString *errorDesc = nil;
-    NSPropertyListFormat format;
-    NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString *plistPath = [rootPath stringByAppendingPathComponent:plistName];
-    NSData *plistXML = [[NSFileManager defaultManager] contentsAtPath:plistPath];
-    NSDictionary *plist = (NSDictionary *)[NSPropertyListSerialization propertyListFromData:plistXML
-                                                                           mutabilityOption:NSPropertyListMutableContainersAndLeaves
-                                                                                     format:&format
-                                                                           errorDescription:&errorDesc];
-    if (!plist) {
-        NSLog(@"Error reading plist at %@: %@, format: %d", plistPath, errorDesc, format);
-    }
-    
-    if (plist && (creep = [super initWithFile:[plist objectForKey:@"image"]])) {
-        creep.hp = [[plist objectForKey:@"hp"] intValue];
-        creep.moveDuration = [[plist objectForKey:@"moveDuration"] intValue];
-        creep.currentWaypoint = 0;
-    }
-    [rootPath release];
-    [plistPath release];
-    [plistXML release];
-    [plist release];
-    [errorDesc release];
-    return creep;
-}
-
-- (Waypoint *)getCurrentWaypoint
-{
-    DataModel *m = [DataModel getModel];
-    Waypoint *waypoint = [m.waypoints objectAtIndex:self.currentWaypoint];
-    return waypoint;
-}
-
-- (Waypoint *)getNextWaypoint
-{
-    DataModel *m = [DataModel getModel];
-    
-    self.currentWaypoint++;
+- (WayPoint *)getCurrentWaypoint{
 	
-	if (self.currentWaypoint >= m.waypoints.count){
-        self.currentWaypoint--;
+	DataModel *m = [DataModel getModel];
+	
+	WayPoint *waypoint = (WayPoint *) [m._waypoints objectAtIndex:self.curWaypoint];
+	
+	return waypoint;
+}
+
+- (WayPoint *)getNextWaypoint{
+	
+	DataModel *m = [DataModel getModel];
+    
+	self.curWaypoint++;
+	
+	if (self.curWaypoint >= m._waypoints.count){
+        self.curWaypoint--;
         gameHUD = [GameHUD sharedHUD];
         if (gameHUD.baseHpPercentage > 0) {
             BaseAttributes *baseAttributes = [BaseAttributes sharedAttributes];;
@@ -90,25 +65,24 @@
         NSMutableArray *endtargetsToDelete = [[NSMutableArray alloc] init];
         [endtargetsToDelete addObject:target];
         for (CCSprite *target in endtargetsToDelete) {
-            [m.targets removeObject:target];
+            [m._targets removeObject:target];
             [self.parent removeChild:target cleanup:YES];
         }
         return NULL;
     }
 	
-	Waypoint *waypoint = (Waypoint *) [m.waypoints objectAtIndex:self.currentWaypoint];
+	WayPoint *waypoint = (WayPoint *) [m._waypoints objectAtIndex:self.curWaypoint];
 	
 	return waypoint;
 }
 
-- (Waypoint *)getLastWaypoint
-{
+- (WayPoint *)getLastWaypoint{
 	
 	DataModel *m = [DataModel getModel];
     
-	self.lastWaypoint = self.currentWaypoint -1;
+	self.lastWaypoint = self.curWaypoint -1;
 	
-	Waypoint *waypoint = (Waypoint *) [m.waypoints objectAtIndex:self.lastWaypoint];
+	WayPoint *waypoint = (WayPoint *) [m._waypoints objectAtIndex:self.lastWaypoint];
 	
 	return waypoint;
 }
@@ -118,12 +92,12 @@
     
     DataModel *m = [DataModel getModel];
     
-    Waypoint *waypoint0 = (Waypoint *) [m.waypoints objectAtIndex:0];
-    Waypoint *waypoint1 = (Waypoint *) [m.waypoints objectAtIndex:1];
+    WayPoint *waypoint0 = (WayPoint *) [m._waypoints objectAtIndex:0];
+    WayPoint *waypoint1 = (WayPoint *) [m._waypoints objectAtIndex:1];
     firstDistance = ccpDistance(waypoint0.position, waypoint1.position);    
     
-    Waypoint *waypoint2 = (Waypoint *) [m.waypoints objectAtIndex:(self.currentWaypoint-1)];
-    Waypoint *waypoint3 = (Waypoint *) [m.waypoints objectAtIndex:(self.currentWaypoint)];
+    WayPoint *waypoint2 = (WayPoint *) [m._waypoints objectAtIndex:(self.curWaypoint-1)];
+    WayPoint *waypoint3 = (WayPoint *) [m._waypoints objectAtIndex:(self.curWaypoint)];
     float thisDistance = ccpDistance(waypoint2.position, waypoint3.position);
     
     float moveScale = thisDistance/firstDistance;
@@ -136,7 +110,7 @@
 	
 	
 	// Rotate creep to face next waypoint
-	Waypoint *waypoint = [self getCurrentWaypoint ];
+	WayPoint *waypoint = [self getCurrentWaypoint ];
 	
 	CGPoint waypointVector = ccpSub(waypoint.position, self.position);
 	CGFloat waypointAngle = ccpToAngle(waypointVector);
@@ -154,7 +128,7 @@
     
     //Update health bar pos and percentage.
     healthBar.position = ccp(self.position.x, (self.position.y+20));
-    healthBar.percentage = ((float)self.hp/(float)self.totalHP) *100;
+    healthBar.percentage = ((float)self.hp/(float)self.totalHp) *100;
     if (healthBar.percentage <= 0) {
         [self removeChild:healthBar cleanup:YES];
     }
@@ -169,14 +143,14 @@
     FastRedCreep *creep = nil;
     if ((creep = [[[super alloc] initWithFile:@"Enemy1.png"] autorelease])) {
         BaseAttributes* baseAttributes = [BaseAttributes sharedAttributes];
-        creep.hp = creep.totalHP = baseAttributes.baseRedCreepHealth;
+        creep.hp = creep.totalHp = baseAttributes.baseRedCreepHealth;
         creep.moveDuration = baseAttributes.baseRedCreepMoveDur;
-		creep.currentWaypoint = 0;
+		creep.curWaypoint = 0;
     }
 	
 	[creep schedule:@selector(creepLogic:) interval:0.2];
     [creep schedule:@selector(healthBarLogic:)];
-    
+
 	
     return creep;
 }
@@ -190,14 +164,14 @@
     StrongGreenCreep *creep = nil;
     if ((creep = [[[super alloc] initWithFile:@"Enemy2.png"] autorelease])) {
         BaseAttributes* baseAttributes = [BaseAttributes sharedAttributes];
-        creep.hp = creep.totalHP = baseAttributes.baseGreenCreepHealth;
+        creep.hp = creep.totalHp = baseAttributes.baseGreenCreepHealth;
         creep.moveDuration = baseAttributes.baseGreenCreepMoveDur;
-		creep.currentWaypoint = 0;
+		creep.curWaypoint = 0;
     }
 	
 	[creep schedule:@selector(creepLogic:) interval:0.2];
     [creep schedule:@selector(healthBarLogic:)];
-    
+
 	return creep;
 }
 
@@ -210,9 +184,9 @@
     BossBrownCreep *creep = nil;
     if ((creep = [[[super alloc] initWithFile:@"Enemy3.png"] autorelease])) {
         BaseAttributes* baseAttributes = [BaseAttributes sharedAttributes];
-        creep.hp = creep.totalHP = baseAttributes.baseBrownCreepHealth;
+        creep.hp = creep.totalHp = baseAttributes.baseBrownCreepHealth;
         creep.moveDuration = baseAttributes.baseBrownCreepMoveDur;
-		creep.currentWaypoint = 0;
+		creep.curWaypoint = 0;
         
     }
     [creep schedule:@selector(creepLogic:) interval:0.2];

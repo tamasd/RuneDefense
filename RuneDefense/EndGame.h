@@ -9,7 +9,7 @@
 #import "CCLayer.h"
 #import "cocos2d.h"
 #import "GameHUD.h"
-#import "MapScreenLayer.h"
+#import "TutorialScene.h"
 #import "MenuLayer.h"
 
 @interface EndGame : CCLayerColor{

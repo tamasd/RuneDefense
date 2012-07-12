@@ -75,7 +75,7 @@
 //Reset the game and start from the begining. 
 
     [GameHUD resetGameHUD];
-    [MapScreenLayer resetGame];
+    [Tutorial resetGame];
     [self.parent removeChild:self cleanup:TRUE];
     [[CCDirector sharedDirector] resume];
 }

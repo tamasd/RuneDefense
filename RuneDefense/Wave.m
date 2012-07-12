@@ -1,30 +1,45 @@
 //
 //  Wave.m
-//  RuneDefense
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
 #import "Wave.h"
 
 @implementation Wave
 
-@synthesize spawnRate, redCreeps, greenCreeps, brownCreeps, creepType;
+@synthesize spawnRate = _spawnRate;
+@synthesize redCreeps = _redCreeps;
+@synthesize greenCreeps = _greenCreeps;
+@synthesize brownCreeps = _brownCreeps;
+@synthesize creepType = _creepType;
 
-- (id)initWithCreep:(Creep *)creep spawnRate:(float)spawnrate redCreeps:(int)redcreeps greenCreeps:(int)greencreeps brownCreeps:(int)browncreeps
+-(id) init
 {
-    NSAssert(creep != nil, @"Invalid creep for wave.");
-    
-    if (self = [super init]) {
-        self.creepType = creep;
-        self.spawnRate = spawnrate;
-        self.redCreeps = redcreeps;
-        self.greenCreeps = greencreeps;
-        self.brownCreeps = browncreeps;
-    }
-    
-    return self;
+	if( (self=[super init]) ) {
+		
+	}
+	
+	return self;
 }
+
+- (id) initWithCreep:(Creep *)creep SpawnRate:(float)spawnrate RedCreeps:(int)redcreeps GreenCreeps: (int)greencreeps BrownCreeps: (int)browncreeps
+{
+	NSAssert(creep!=nil, @"Invalid creep for wave.");
+    
+	if( (self = [self init]) )
+	{
+		_creepType = creep;
+		_spawnRate = spawnrate;
+		_redCreeps = redcreeps;
+        _greenCreeps = greencreeps;
+        _brownCreeps = browncreeps;
+        
+	}
+	return self;
+}
+
 
 @end

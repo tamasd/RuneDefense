@@ -1,23 +1,31 @@
 //
 //  Wave.h
-//  RuneDefense
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
-#import "CCNode.h"
+#import "cocos2d.h"
 
-@class Creep;
+#import "Creep.h"
 
-@interface Wave : CCNode
+@interface Wave : CCNode {
+	float _spawnRate;
+	int _redCreeps;
+    int _greenCreeps;
+    int _brownCreeps;
 
-@property (nonatomic, assign) float spawnRate;
+	Creep * _creepType;
+}
+
+@property (nonatomic) float spawnRate;
 @property (nonatomic) int redCreeps;
 @property (nonatomic) int greenCreeps;
 @property (nonatomic) int brownCreeps;
+
 @property (nonatomic, retain) Creep *creepType;
 
-- (id)initWithCreep:(Creep *)creep spawnRate:(float)spawnrate redCreeps:(int)redcreeps greenCreeps:(int)greencreeps brownCreeps:(int)browncreeps;
+- (id) initWithCreep:(Creep *)creep SpawnRate:(float)spawnrate RedCreeps:(int)redcreeps GreenCreeps: (int)greencreeps BrownCreeps: (int)browncreeps;
 
 @end

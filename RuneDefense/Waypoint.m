@@ -1,21 +1,22 @@
 //
-//  Waypoint.m
-//  RuneDefense
+//  WayPoint.m
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
-#import "Waypoint.h"
+#import "WayPoint.h"
 
-@implementation Waypoint
 
-- (id)init
+@implementation WayPoint
+
+- (id) init
 {
-    if (self = [super init]) {
-        
-    }
-    return self;
+	if ((self = [super init])) {
+		
+	}
+	return self;
 }
 
 @end

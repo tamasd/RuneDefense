@@ -1,37 +1,47 @@
 //
 //  Creep.h
-//  RuneDefense
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
-#import "CCSprite.h"
 #import "cocos2d.h"
 
-@class Waypoint;
-@class GameHUD;
+#import "DataModel.h"
+#import "WayPoint.h"
+#import "GameHUD.h"
 
-@interface Creep : CCSprite {
-    GameHUD *gameHUD;
+@interface Creep : CCSprite <NSCopying> {
+    int _curHp;
+    int _totalHp;
+	int _moveDuration;
+	
+	int _curWaypoint;
+    int _lastWaypoint;
     float firstDistance;
+
+    GameHUD * gameHUD;
+    CCProgressTimer *healthBar;
+
 }
 
 @property (nonatomic, assign) int hp;
 @property (nonatomic, assign) int moveDuration;
-@property (nonatomic, assign) int currentWaypoint;
+@property (nonatomic, assign) int totalHp;
+
+@property (nonatomic, assign) int curWaypoint;
 @property (nonatomic, assign) int lastWaypoint;
-@property (nonatomic, assign) int totalHP;
-@property (nonatomic, copy) NSString *dataFile;
 
-@property (nonatomic, retain) CCProgressTimer *healthBar;
+@property (nonatomic,retain) CCProgressTimer *healthBar;
 
-- (Creep *)initWithCreep:(Creep *)copyFrom;
-- (Creep *)initFromDataFile:(NSString *)plistName;
-- (Waypoint *)getCurrentWaypoint;
-- (Waypoint *)getNextWaypoint;
-- (Waypoint *)getLastWaypoint;
-- (float)moveDurScale;
+
+- (Creep *) initWithCreep:(Creep *) copyFrom; 
+- (WayPoint *)getCurrentWaypoint;
+- (WayPoint *)getNextWaypoint;
+- (WayPoint *)getLastWaypoint;
+- (float) moveDurScale;
+
 
 @end
 

@@ -1,71 +1,80 @@
 //
 //  DataModel.m
-//  RuneDefense
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
 #import "DataModel.h"
 
 @implementation DataModel
 
-@synthesize gameLayer, waves, waypoints, targets, gestureRecognizer, gameHUDLayer, projectiles, towers;
+@synthesize _gameLayer;
+@synthesize _gameHUDLayer;
 
-+ (DataModel *)getModel
+@synthesize _projectiles;
+@synthesize _towers;
+@synthesize _targets;
+@synthesize _waypoints;
+
+@synthesize _waves;
+
+@synthesize _gestureRecognizer;
+
+static DataModel *_sharedContext = nil;
+
++(DataModel*)getModel 
 {
-    static DataModel *model = nil;
-    if (!model) {
-        model = [[DataModel alloc] init];
-    }
-    return model;
+	if (!_sharedContext) {
+		_sharedContext = [[self alloc] init];
+	}
+	
+	return _sharedContext;
 }
 
--(void)encodeWithCoder:(NSCoder *)coder
-{
-    
+-(void)encodeWithCoder:(NSCoder *)coder {
+
 }
 
--(id)initWithCoder:(NSCoder *)coder
-{
-    
+-(id)initWithCoder:(NSCoder *)coder {
+
 	return self;
 }
 
 - (id) init
 {
 	if ((self = [super init])) {
-		projectiles = [[NSMutableArray alloc] init];
-		towers = [[NSMutableArray alloc] init];
-		targets = [[NSMutableArray alloc] init];
+		_projectiles = [[NSMutableArray alloc] init];
+		_towers = [[NSMutableArray alloc] init];
+		_targets = [[NSMutableArray alloc] init];
 		
-		waypoints = [[NSMutableArray alloc] init];
+		_waypoints = [[NSMutableArray alloc] init];
 		
-		waves = [[NSMutableArray alloc] init];
+		_waves = [[NSMutableArray alloc] init];
 	}
 	return self;
 }
 
-- (void)dealloc
-{	
-	self.gameLayer = nil;
-	self.gameHUDLayer = nil;
-	self.gestureRecognizer = nil;
+- (void)dealloc {	
+	self._gameLayer = nil;
+	self._gameHUDLayer = nil;
+	self._gestureRecognizer = nil;
 	
-	[projectiles release];
-	projectiles = nil;
+	[_projectiles release];
+	_projectiles = nil;
 	
-	[towers release];
-	towers = nil;
+	[_towers release];
+	_towers = nil;
 	
-	[targets release];
-	targets = nil;	
+	[_targets release];
+	_targets = nil;	
 	
-	[waypoints release];
-	waypoints = nil;
+	[_waypoints release];
+	_waypoints = nil;
 	
-	[waves release];
-	waves = nil;	
+	[_waves release];
+	_waves = nil;	
 	[super dealloc];
 }
 

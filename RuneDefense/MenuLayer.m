@@ -34,7 +34,7 @@
 -(void) startGame
 {
     [GameHUD resetGameHUD];
-    [MapScreenLayer resetGame];
+    [Tutorial resetGame];
     [self.parent removeChild:self cleanup:TRUE];
     [[CCDirector sharedDirector] resume];
 }

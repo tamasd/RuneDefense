@@ -1,37 +1,55 @@
 //
 //  GameHUD.m
-//  RuneDefense
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
 #import "GameHUD.h"
+#import "EndGame.h"
 #import "DataModel.h"
-#import "baseAttributes.h"
+#import "TutorialScene.h"
 #import "PauseLayer.h"
 
 @implementation GameHUD
 
-@synthesize resources, baseHpPercentage, waveCount;
+@synthesize resources = resources;
+@synthesize baseHpPercentage = baseHpPercentage;
+@synthesize waveCount = waveCount;
 
+//int waveCount;
 bool resetGameHUD;
+
+static GameHUD *_sharedHUD = nil;
 
 + (GameHUD *)sharedHUD
 {
-    static GameHUD *sharedHUD = nil;
 	@synchronized([GameHUD class])
 	{
-		if (!sharedHUD) {
-			sharedHUD = [[GameHUD alloc] init];
-        }
+		if (!_sharedHUD)
+			[[self alloc] init];
+		return _sharedHUD;
 	}
-	return sharedHUD;
+	// to avoid compiler warning
+	return nil;
+}
+
++(id)alloc
+{
+	@synchronized([GameHUD class])
+	{
+		NSAssert(_sharedHUD == nil, @"Attempted to allocate a second instance of a singleton.");
+		_sharedHUD = [super alloc];
+		return _sharedHUD;
+	}
+	// to avoid compiler warning
+	return nil;
 }
 
 -(id) init
 {
-	if ((self = [super init])) {
+	if ((self=[super init]) ) {
 		
 		CGSize winSize = [CCDirector sharedDirector].winSize;
         baseAttributes = [BaseAttributes sharedAttributes];
@@ -79,7 +97,7 @@ bool resetGameHUD;
         //CGSize winSize = [CCDirector sharedDirector].winSize;
         
         // Set up Resources and Resource label
-        resourceLabel = [CCLabelTTF labelWithString:@"Money $100" dimensions:CGSizeMake(150, 25) alignment:UITextAlignmentRight fontName:@"Marker Felt" fontSize:20];
+        self->resourceLabel = [CCLabelTTF labelWithString:@"Money $100" dimensions:CGSizeMake(150, 25) alignment:UITextAlignmentRight fontName:@"Marker Felt" fontSize:20];
         resourceLabel.position = ccp(30, (winSize.height - 15));
         resourceLabel.color = ccc3(255,80,20);
         [self addChild:resourceLabel z:1];
@@ -108,17 +126,16 @@ bool resetGameHUD;
         [self addChild:newWaveLabel z:1];
         
         //Set up helth Bar
-        //healthBar = [CCProgressTimer progressWithFile:@"health_bar_green.png"];
-        healthBar = [CCProgressTimer progressWithSprite:[CCSprite spriteWithFile:@"health_bar_green.png"]];
+        healthBar = [CCProgressTimer progressWithFile:@"health_bar_green.png"];
         healthBar.type = kCCProgressTimerTypeBar;
         healthBar.percentage = baseHpPercentage;
         [healthBar setScale:0.5]; 
-        healthBar.position = ccp(winSize.width - 55, winSize.height - 15);
+        healthBar.position = ccp(winSize.width -55, winSize.height -15);
         [self addChild:healthBar z:1];
         
         baseHpPercentage = 100;
         [healthBar setPercentage:baseHpPercentage];
-        
+
         
         
         [[CCTouchDispatcher sharedDispatcher] addTargetedDelegate:self priority:0 swallowsTouches:YES];
@@ -133,10 +150,15 @@ bool resetGameHUD;
         pauseButton.scale = 0.13;
         
         CCMenu *menu = [CCMenu menuWithItems:pauseButton, nil];
-		menu.position = ccp(winSize.width - 35, 35);
+		menu.position = ccp(winSize.width -35, 35);
 		[menu alignItemsVerticallyWithPadding: 20.0f];
 		[self addChild:menu];
+
+        
+
 	}
+    
+    
     return self;
 }
 +(void) resetGameHUD
@@ -153,10 +175,10 @@ bool resetGameHUD;
     baseHpPercentage = 99;
     [healthBar setPercentage:baseHpPercentage];    
     [self updateBaseHp:+1];
-    
+
     waveCount = 0;
     [waveCountLabel setString:[NSString stringWithFormat: @"Wave 1"]];
-    
+
     resources = baseAttributes.baseStartingMoney;
     [resourceLabel setString:[NSString stringWithFormat: @"Money $%i",resources]];
 }
@@ -220,7 +242,7 @@ bool resetGameHUD;
     
     if (baseHpPercentage <= 0) {
         //Game Over Scenario
-        //printf("Game Over\n");
+      //printf("Game Over\n");
         
         CCLayerColor *endGameLayer =[[[EndGame alloc]init:NO ]autorelease];
         [self.parent addChild:endGameLayer z:10];
@@ -261,7 +283,7 @@ bool resetGameHUD;
                 
                 
                 DataModel *m = [DataModel getModel];
-                m.gestureRecognizer.enabled = NO;
+                m._gestureRecognizer.enabled = NO;
                 
                 selSpriteRange = [CCSprite spriteWithFile:@"Range.png"];
                 
@@ -309,9 +331,9 @@ bool resetGameHUD;
 		selSpriteRange.position = newPos;
 		
 		DataModel *m = [DataModel getModel];
-		CGPoint touchLocationInGameLayer = [m.gameLayer convertTouchToNodeSpace:touch];
+		CGPoint touchLocationInGameLayer = [m._gameLayer convertTouchToNodeSpace:touch];
 		
-		BOOL isBuildable = (bool)[m.gameLayer canBuildOnTilePosition: touchLocationInGameLayer];
+		BOOL isBuildable = (bool)[m._gameLayer canBuildOnTilePosition: touchLocationInGameLayer];
 		if (isBuildable) {
 			selSprite.opacity = 200;
 		} else {
@@ -323,16 +345,16 @@ bool resetGameHUD;
 - (void)ccTouchEnded:(UITouch *)touch withEvent:(UIEvent *)event {  
 	CGPoint touchLocation = [self convertTouchToNodeSpace:touch];	
 	DataModel *m = [DataModel getModel];
-    
+
 	if (selSprite) {
 		CGRect backgroundRect = CGRectMake(background.position.x, 
-                                           background.position.y, 
-                                           background.contentSize.width, 
-                                           background.contentSize.height);
+									   background.position.y, 
+									   background.contentSize.width, 
+									   background.contentSize.height);
 		
 		if (!CGRectContainsPoint(backgroundRect, touchLocation)) {
-			CGPoint touchLocationInGameLayer = [m.gameLayer convertTouchToNodeSpace:touch];
-			[m.gameLayer addTower: touchLocationInGameLayer: selSprite.tag];
+			CGPoint touchLocationInGameLayer = [m._gameLayer convertTouchToNodeSpace:touch];
+			[m._gameLayer addTower: touchLocationInGameLayer: selSprite.tag];
 		}
 		
 		[self removeChild:selSprite cleanup:YES];
@@ -341,7 +363,7 @@ bool resetGameHUD;
 		selSpriteRange = nil;			
 	}
 	
-	m.gestureRecognizer.enabled = YES;
+	m._gestureRecognizer.enabled = YES;
 }
 - (void) registerWithTouchDispatcher
 {
@@ -355,5 +377,4 @@ bool resetGameHUD;
     movableSprites = nil;
 	[super dealloc];
 }
-
 @end

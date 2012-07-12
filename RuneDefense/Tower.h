@@ -1,19 +1,43 @@
 //
-//  Tower.h
-//  RuneDefense
+//  Creep.h
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
-#import "CCSprite.h"
+#import "cocos2d.h"
+#import "SimpleAudioEngine.h"
+#import "Projectile.h"
+#import "DataModel.h"
+#import "Creep.h"
 
-@class Creep;
 
-@interface Tower : CCSprite {    
-	CCSprite *selSpriteRange;
+@interface Tower : CCSprite {
+    int experience;
+    int lvl;
+    
+    int lvlup1;
+    int lvlup2;
+    int lvlupCost;
+    bool lvlupReady;
+    
+	int range;
+    int damageMin;
+    int damageRandom;
+    float fireRate;
+    float freezeDur;
+    float splashDist;
+    
+    Creep *_target; 
+    
+	//Creep * _target;
+	CCSprite * selSpriteRange;
 	
-	NSMutableArray *projectiles;
+	NSMutableArray *_projectiles;
+	CCSprite *_nextProjectile;
+    
+    BaseAttributes *baseAttributes;
 }
 
 @property (nonatomic, assign) int experience;
@@ -32,8 +56,8 @@
 @property (nonatomic, assign) float splashDist;
 
 
-@property (nonatomic, retain) CCSprite *nextProjectile;
-@property (nonatomic, retain) Creep *target;
+@property (nonatomic, retain) CCSprite * nextProjectile;
+@property (nonatomic, retain) Creep * target;
 
 - (Creep *)getClosestTarget;
 

@@ -1,36 +1,33 @@
 //
-//  MapScreenLayer.m
-//  RuneDefense
+//  TutorialLayer.m
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
-#import "MapScreenLayer.h"
-#import "Creep.h"
-#import "Waypoint.h"
-#import "DataModel.h"
-#import "Wave.h"
+// Import the interfaces
+#import "TutorialScene.h"
 #import "GameHUD.h"
-#import "MenuLayer.h"
-#import "Tower.h"
-#import "Projectile.h"
-#import "baseAttributes.h"
-#import "EndGame.h"
 
-@implementation MapScreenLayer
+#import "DataModel.h"
 
-@synthesize tileMap, background, currentLevel;
+// Tutorial implementation
+@implementation Tutorial
+
+@synthesize tileMap = _tileMap;
+@synthesize background = _background;
 
 bool reset;
 
-+ (CCScene *)scene
+@synthesize currentLevel = _currentLevel;
++(id) scene
 {
-    // 'scene' is an autorelease object.
+	// 'scene' is an autorelease object.
 	CCScene *scene = [CCScene node];
 	
 	// 'layer' is an autorelease object.
-	MapScreenLayer *layer = [MapScreenLayer node];
+	Tutorial *layer = [Tutorial node];
 	
 	// add layer as a child to scene
 	[scene addChild: layer z:1];
@@ -43,20 +40,45 @@ bool reset;
     [[CCDirector sharedDirector] pause];
 	
 	DataModel *m = [DataModel getModel];
-	m.gameLayer = layer;
-	m.gameHUDLayer = myGameHUD;
+	m._gameLayer = layer;
+	m._gameHUDLayer = myGameHUD;
 	
 	// return the scene
 	return scene;
 }
 
+-(void)addWaves {
+	DataModel *m = [DataModel getModel];
+	
+	Wave *wave = nil;
+    wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] SpawnRate:1.0 RedCreeps:0 GreenCreeps:0 BrownCreeps:0];
+    [m._waves addObject:wave];
+	wave = nil;
+	wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] SpawnRate:1.0 RedCreeps:5 GreenCreeps:0 BrownCreeps:0];
+	[m._waves addObject:wave];
+	wave = nil;
+	wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] SpawnRate:1.0 RedCreeps:5 GreenCreeps:3 BrownCreeps:0];
+	[m._waves addObject:wave];
+	wave = nil;	
+    wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] SpawnRate:0.8 RedCreeps:3 GreenCreeps:7 BrownCreeps:0];
+	[m._waves addObject:wave];
+	wave = nil;
+	wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] SpawnRate:1.2 RedCreeps:10 GreenCreeps:10 BrownCreeps:0];
+	[m._waves addObject:wave];
+    wave = nil;
+    wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] SpawnRate:1.5 RedCreeps:5 GreenCreeps:5 BrownCreeps:2];
+	[m._waves addObject:wave];
+	wave = nil;
+}
+
+
 // on "init" you need to initialize your instance
 -(id) init {
     if((self = [super init])) {				
 		self.tileMap = [CCTMXTiledMap tiledMapWithTMXFile:@"TileMap.tmx"];
-        self.background = [tileMap layerNamed:@"Background"];
+        self.background = [_tileMap layerNamed:@"Background"];
 		self.background.anchorPoint = ccp(0, 0);
-		[self addChild:tileMap z:0];
+		[self addChild:_tileMap z:0];
 		
 		[self addWaypoint];
 		[self addWaves];
@@ -74,7 +96,7 @@ bool reset;
 		gameHUD = [GameHUD sharedHUD];
         baseAttributes = [BaseAttributes sharedAttributes];
         
-        
+    
         //[self loadMenu];
     }
     return self;
@@ -96,7 +118,7 @@ bool reset;
     DataModel *m = [DataModel getModel];
     
     NSMutableArray *towersToDelete = [[NSMutableArray alloc] init];
-	for (Tower *tower in m.towers) {
+	for (Tower *tower in m._towers) {
         [towersToDelete addObject:tower];
         [self removeChild:tower cleanup:YES];
     }
@@ -104,27 +126,27 @@ bool reset;
         [self removeChild:tower cleanup:YES];
     }
     [towersToDelete release];
-    
-    for (Creep *target in m.targets) {
-        [m.targets removeObject:target];
+
+    for (Creep *target in m._targets) {
+        [m._targets removeObject:target];
         [self removeChild:target.healthBar cleanup:YES];
         [self removeChild:target cleanup:YES];
     }
     NSMutableArray *projectilesToDelete = [[NSMutableArray alloc] init];
-	for (Projectile *projectile in m.projectiles) {
+	for (Projectile *projectile in m._projectiles) {
         [projectilesToDelete addObject:projectile];
     }
     for (Projectile *projectile in projectilesToDelete) {
         [self removeChild:projectile cleanup:YES];
     }
     [projectilesToDelete release];
-    
-    [m.towers removeAllObjects];
-    [m.targets removeAllObjects];
-    [m.projectiles removeAllObjects];
-    [m.waves removeAllObjects];
+
+    [m._towers removeAllObjects];
+    [m._targets removeAllObjects];
+    [m._projectiles removeAllObjects];
+    [m._waves removeAllObjects];
     [self addWaves];
-    
+
     // Call game logic about every second
     [self schedule:@selector(update:)];
     [self schedule:@selector(gameLogic:) interval:0.2];		
@@ -139,7 +161,7 @@ bool reset;
 - (Wave *)getCurrentWave{
 	
 	DataModel *m = [DataModel getModel];	
-	Wave * wave = (Wave *) [m.waves objectAtIndex:self.currentLevel];
+	Wave * wave = (Wave *) [m._waves objectAtIndex:self.currentLevel];
 	
 	return wave;
 }
@@ -148,9 +170,9 @@ bool reset;
 	
 	DataModel *m = [DataModel getModel];
     
-    //    printf("this level %i", self.currentLevel);
+//    printf("this level %i", self.currentLevel);
 	if (self.currentLevel >= 5){
-        
+       
         //NSLog(@"you have reached the end of the game!");
         return NULL;
     }
@@ -158,9 +180,9 @@ bool reset;
 	self.currentLevel++;
 	
 	
-    Wave * wave = (Wave *) [m.waves objectAtIndex:self.currentLevel];
-    
-    return wave;
+	 Wave * wave = (Wave *) [m._waves objectAtIndex:self.currentLevel];
+	 
+	 return wave;
 }
 
 
@@ -176,7 +198,7 @@ bool reset;
 	DataModel *m = [DataModel getModel];
 	
 	CCTMXObjectGroup *objects = [self.tileMap objectGroupNamed:@"Objects"];
-	Waypoint *wp = nil;
+	WayPoint *wp = nil;
 	
 	int wayPointCounter = 0;
 	NSMutableDictionary *wayPoint;
@@ -184,13 +206,13 @@ bool reset;
 		int x = [[wayPoint valueForKey:@"x"] intValue];
 		int y = [[wayPoint valueForKey:@"y"] intValue];
 		
-		wp = [Waypoint node];
+		wp = [WayPoint node];
 		wp.position = ccp(x, y);
-		[m.waypoints addObject:wp];
+		[m._waypoints addObject:wp];
 		wayPointCounter++;
 	}
 	
-	NSAssert([m.waypoints count] > 0, @"Waypoint objects missing");
+	NSAssert([m._waypoints count] > 0, @"Waypoint objects missing");
 	wp = nil;
 }
 
@@ -214,7 +236,7 @@ bool reset;
     
     bool occupied = NO;
     DataModel *m = [DataModel getModel];
-    for (Tower *tower in m.towers) {
+    for (Tower *tower in m._towers) {
         CGRect towerRect = CGRectMake(tower.position.x - (tower.contentSize.width/2), 
                                       tower.position.y - (tower.contentSize.height/2), 
                                       tower.contentSize.width, 
@@ -222,7 +244,7 @@ bool reset;
         if (CGRectContainsPoint(towerRect, pos)) {
             occupied = YES;
         }
-        
+ 
     }
     
 	if([type isEqualToString: @"1"] && occupied == NO) {
@@ -237,7 +259,7 @@ bool reset;
 	
 	Tower *target = nil;
     pos = ccpAdd(pos, ccp(0, 20));
-    
+
 	CGPoint towerLoc = [self tileCoordForPosition: pos];
     
 	
@@ -247,7 +269,7 @@ bool reset;
 	
 	
 	bool occupied = NO;
-    for (Tower *tower in m.towers) {
+    for (Tower *tower in m._towers) {
         CGRect towerRect = CGRectMake(tower.position.x - (tower.contentSize.width/2), 
                                       tower.position.y - (tower.contentSize.height/2), 
                                       tower.contentSize.width, 
@@ -259,7 +281,7 @@ bool reset;
     }
     
 	if([type isEqualToString: @"1"] && occupied == NO) {
-        
+
         printf("money %i", gameHUD.resources);
         
         switch (towerTag) {
@@ -289,14 +311,14 @@ bool reset;
                 break;
             default:
                 break;
-                
+        
         }
         
 		target.position = ccp((towerLoc.x * 32) + 16, self.tileMap.contentSize.height - (towerLoc.y * 32) - 16);
 		[self addChild:target z:1];
 		
 		target.tag = 1;
-		[m.towers addObject:target];
+		[m._towers addObject:target];
 		
 	} else {
 		NSLog(@"Tile Not Buildable");
@@ -358,12 +380,11 @@ bool reset;
             break;
     }
 	
-	Waypoint *waypoint = [target getCurrentWaypoint];
+	WayPoint *waypoint = [target getCurrentWaypoint];
 	target.position = waypoint.position;	
 	waypoint = [target getNextWaypoint ];
 	[self addChild:target z:layer];
 	
-    //target.healthBar = [CCProgressTimer progressWithFile:@"health_bar_red.png"];
     target.healthBar = [CCProgressTimer progressWithSprite:[CCSprite spriteWithFile:@"health_bar_red.png"]];
     target.healthBar.type = kCCProgressTimerTypeBar;
     target.healthBar.percentage = 100;
@@ -378,7 +399,7 @@ bool reset;
 	[target runAction:[CCSequence actions:actionMove, actionMoveDone, nil]];
 	
 	// Add to targets array
-	[m.targets addObject:target];
+	[m._targets addObject:target];
     return;
 }
 
@@ -386,8 +407,8 @@ bool reset;
     
 	Creep *creep = (Creep *)sender;
 	
-	Waypoint * waypoint = [creep getNextWaypoint];
-    
+	WayPoint * waypoint = [creep getNextWaypoint];
+
 	int moveDuration = [creep moveDurScale];
     
 	id actionMove = [CCMoveTo actionWithDuration:moveDuration position:waypoint.position];
@@ -400,8 +421,8 @@ bool reset;
 -(void)ResumePath:(id)sender {
     Creep *creep = (Creep *)sender;
     
-    Waypoint * cWaypoint = [creep getCurrentWaypoint];//destination
-    Waypoint * lWaypoint = [creep getLastWaypoint];//startpoint
+    WayPoint * cWaypoint = [creep getCurrentWaypoint];//destination
+    WayPoint * lWaypoint = [creep getLastWaypoint];//startpoint
     
     float waypointDist = fabsf(cWaypoint.position.x - lWaypoint.position.x);
     float creepDist = fabsf(cWaypoint.position.x - creep.position.x);
@@ -415,11 +436,14 @@ bool reset;
 }
 
 -(void)gameLogic:(ccTime)dt {
-    //	DataModel *m = [DataModel getModel];
-	Wave *wave = [self getCurrentWave];
+    
+    
+	
+//	DataModel *m = [DataModel getModel];
+	Wave * wave = [self getCurrentWave];
 	static double lastTimeTargetAdded = 0;
     double now = [[NSDate date] timeIntervalSince1970];
-    if(lastTimeTargetAdded == 0 || now - lastTimeTargetAdded >= wave.spawnRate) {
+   if(lastTimeTargetAdded == 0 || now - lastTimeTargetAdded >= wave.spawnRate) {
         [self addTarget];
         lastTimeTargetAdded = now;
     }
@@ -431,11 +455,11 @@ bool reset;
     if (reset == YES) {
         [self resetLayer];
     }
-    
+
 	DataModel *m = [DataModel getModel];
 	NSMutableArray *projectilesToDelete = [[NSMutableArray alloc] init];
-    
-	for (Projectile *projectile in m.projectiles) {
+
+	for (Projectile *projectile in m._projectiles) {
 		
 		CGRect projectileRect = CGRectMake(projectile.position.x - (projectile.contentSize.width/2), 
 										   projectile.position.y - (projectile.contentSize.height/2), 
@@ -444,7 +468,7 @@ bool reset;
         
 		NSMutableArray *targetsToDelete = [[NSMutableArray alloc] init];
         
-		for (CCSprite *target in m.targets) {
+		for (CCSprite *target in m._targets) {
             
 			CGRect targetRect = CGRectMake(target.position.x - (target.contentSize.width/2), 
 										   target.position.y - (target.contentSize.height/2), 
@@ -485,7 +509,7 @@ bool reset;
                                                 projectile.position.y - (parentTower.splashDist), 
                                                 (parentTower.splashDist*2), 
                                                 (parentTower.splashDist*2));
-                        for (CCSprite *target in m.targets) {
+                        for (CCSprite *target in m._targets) {
                             CGRect thistargetRect = CGRectMake(target.position.x - (target.contentSize.width/2), 
                                                                target.position.y - (target.contentSize.height/2), 
                                                                target.contentSize.width, 
@@ -517,11 +541,11 @@ bool reset;
                 break;
                 
 			}						
-            
+						
 		}
 		
 		for (CCSprite *target in targetsToDelete) {
-			[m.targets removeObject:target];
+			[m._targets removeObject:target];
 			[self removeChild:target cleanup:YES];	
             
 		}
@@ -530,22 +554,22 @@ bool reset;
 	}
 	
 	for (CCSprite *projectile in projectilesToDelete) {
-		[m.projectiles removeObject:projectile];
+		[m._projectiles removeObject:projectile];
 		[self removeChild:projectile cleanup:YES];
 	}
 	[projectilesToDelete release];
     
     
     Wave *wave = [self getCurrentWave];
-    if ([m.targets count] ==0 && wave.redCreeps <= 0 && wave.greenCreeps <= 0 && wave.brownCreeps <= 0) {
+    if ([m._targets count] ==0 && wave.redCreeps <= 0 && wave.greenCreeps <= 0 && wave.brownCreeps <= 0) {
         if (self.currentLevel == 5) {
             CCLayerColor *endGameLayer =[[[EndGame alloc]init:YES]autorelease];
             [self.parent addChild:endGameLayer z:10];
             [[CCDirector sharedDirector] pause]; 
         }
         else{
-            [self schedule:@selector(waveWait) interval:3.0];
-            [gameHUD newWaveApproaching];
+        [self schedule:@selector(waveWait) interval:3.0];
+        [gameHUD newWaveApproaching];
         }
     }
 }
@@ -555,9 +579,9 @@ bool reset;
     CGSize winSize = [CCDirector sharedDirector].winSize;
     CGPoint retval = newPos;
     retval.x = MIN(retval.x, 0);
-    retval.x = MAX(retval.x, - tileMap.contentSize.width+winSize.width); 
+    retval.x = MAX(retval.x, -_tileMap.contentSize.width+winSize.width); 
     retval.y = MIN(0, retval.y);
-    retval.y = MAX(-tileMap.contentSize.height+winSize.height, retval.y); 
+    retval.y = MAX(-_tileMap.contentSize.height+winSize.height, retval.y); 
     return retval;
 }
 
@@ -578,12 +602,12 @@ bool reset;
         [recognizer setTranslation:CGPointZero inView:recognizer.view];    
         
     } else if (recognizer.state == UIGestureRecognizerStateEnded) {
-        
+               
 		float scrollDuration = 0.2;
 		CGPoint velocity = [recognizer velocityInView:recognizer.view];
 		CGPoint newPos = ccpAdd(self.position, ccpMult(ccp(velocity.x, velocity.y * -1), scrollDuration));
 		newPos = [self boundLayerPos:newPos];
-        
+
 		[self stopAllActions];
 		CCMoveTo *moveTo = [CCMoveTo actionWithDuration:scrollDuration position:newPos];            
 		[self runAction:[CCEaseOut actionWithAction:moveTo rate:1]];            
@@ -596,30 +620,5 @@ bool reset;
 {
 	[super dealloc];
 }
-
--(void)addWaves {
-	DataModel *m = [DataModel getModel];
-	
-	Wave *wave = nil;
-    wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] spawnRate:1.0 redCreeps:0 greenCreeps:0 brownCreeps:0];
-    [m.waves addObject:wave];
-	wave = nil;
-	wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] spawnRate:1.0 redCreeps:5 greenCreeps:0 brownCreeps:0];
-	[m.waves addObject:wave];
-	wave = nil;
-	wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] spawnRate:1.0 redCreeps:5 greenCreeps:3 brownCreeps:0];
-	[m.waves addObject:wave];
-	wave = nil;	
-    wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] spawnRate:0.8 redCreeps:3 greenCreeps:7 brownCreeps:0];
-	[m.waves addObject:wave];
-	wave = nil;
-	wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] spawnRate:1.2 redCreeps:10 greenCreeps:10 brownCreeps:0];
-	[m.waves addObject:wave];
-    wave = nil;
-    wave = [[Wave alloc] initWithCreep:[FastRedCreep creep] spawnRate:1.5 redCreeps:5 greenCreeps:5 brownCreeps:2];
-	[m.waves addObject:wave];
-	wave = nil;
-}
-
 
 @end

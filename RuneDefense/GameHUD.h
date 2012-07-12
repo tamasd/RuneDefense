@@ -1,32 +1,41 @@
 //
 //  GameHUD.h
-//  RuneDefense
+//  Cocos2D Build a Tower Defense Game
 //
-//  Created by Tamas Demeter-Haludka on 7/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by iPhoneGameTutorials on 4/4/11.
+//  Copyright 2011 iPhoneGameTutorial.com All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "cocos2d.h"
+#import "baseAttributes.h"
 
-@class BaseAttributes;
+//#import "PauseLayer.h"
 
 @interface GameHUD : CCLayer {
-	CCSprite *background;
-	CCSprite *selSpriteRange;
-    CCSprite *selSprite;
-    NSMutableArray *movableSprites;
+	CCSprite * background;
+	
+	CCSprite * selSpriteRange;
+    CCSprite * selSprite;
+    NSMutableArray * movableSprites;
     int resources;
     CCLabelTTF *resourceLabel;
     CCLabelTTF *waveCountLabel;
     CCLabelTTF *newWaveLabel;
+    float baseHpPercentage;
     CCProgressTimer *healthBar;
     BaseAttributes *baseAttributes;
+    
+    int waveCount;
+
 }
 
 @property (nonatomic, assign) int resources;
 @property (nonatomic, assign) int waveCount;
+
 @property (nonatomic, assign) float baseHpPercentage;
+
+
+
 
 + (GameHUD *)sharedHUD;
 -(void) updateBaseHp:(int)amount;
