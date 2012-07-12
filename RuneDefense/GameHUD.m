@@ -127,7 +127,7 @@ static GameHUD *_sharedHUD = nil;
         
         //Set up helth Bar
         healthBar = [CCProgressTimer progressWithFile:@"health_bar_green.png"];
-        healthBar.type = kCCProgressTimerTypeBar;
+        healthBar.type = kCCProgressTimerTypeHorizontalBarLR;
         healthBar.percentage = baseHpPercentage;
         [healthBar setScale:0.5]; 
         healthBar.position = ccp(winSize.width -55, winSize.height -15);

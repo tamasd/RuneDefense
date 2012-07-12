@@ -385,8 +385,8 @@ bool reset;
 	waypoint = [target getNextWaypoint ];
 	[self addChild:target z:layer];
 	
-    target.healthBar = [CCProgressTimer progressWithSprite:[CCSprite spriteWithFile:@"health_bar_red.png"]];
-    target.healthBar.type = kCCProgressTimerTypeBar;
+    target.healthBar = [CCProgressTimer progressWithFile:@"health_bar_red.png"];
+    target.healthBar.type = kCCProgressTimerTypeHorizontalBarLR;
     target.healthBar.percentage = 100;
     [target.healthBar setScale:0.1]; 
     target.healthBar.position = ccp(target.position.x,(target.position.y+20));
